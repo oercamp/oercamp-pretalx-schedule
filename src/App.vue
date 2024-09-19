@@ -3,22 +3,25 @@
 	template(v-if="scheduleError")
 		.schedule-error
 			.error-message An error occurred while loading the schedule. Please try again later.
-	template(v-else-if="schedule && sessions.length")
+	template(v-else-if="schedule && (sessions.length || (filteredTracks && filteredTracks.length && filteredTags && filteredTags.length))")
 		.modal-overlay(v-if="showFilterModal", @click.stop="showFilterModal = false")
 			.modal-box(@click.stop="")
 				h3 Tracks
 				.checkbox-line(v-for="track in allTracks", :key="track.value", :style="{'--track-color': track.color}")
 					bunt-checkbox(type="checkbox", :label="track.label", :name="track.value + track.label", v-model="track.selected", :value="track.value", @input="onlyFavs = false")
 					.track-description(v-if="getLocalizedString(track.description).length") {{ getLocalizedString(track.description) }}
+				h3 Tags
+				.checkbox-line(v-for="tag in allTags", :key="tag.value", :style="{'--track-color': tag.color}")
+					bunt-checkbox(type="checkbox", :label="tag.label", :name="tag.value + tag.label", v-model="tag.selected", :value="tag.value", @input="onlyFavs = false")
 		.settings
-			bunt-button.filter-tracks(v-if="this.schedule.tracks.length", @click="showFilterModal=true")
+			bunt-button.filter-tracks(v-if="this.schedule.tracks.length || this.schedule.tags.length", @click="showFilterModal=true")
 				svg#filter(viewBox="0 0 752 752")
 					path(d="m401.57 264.71h-174.75c-6.6289 0-11.84 5.2109-11.84 11.84 0 6.6289 5.2109 11.84 11.84 11.84h174.75c5.2109 17.523 21.312 30.309 40.727 30.309 18.941 0 35.52-12.785 40.254-30.309h43.098c6.6289 0 11.84-5.2109 11.84-11.84 0-6.6289-5.2109-11.84-11.84-11.84h-43.098c-5.2109-17.523-21.312-30.309-40.254-30.309-19.414 0-35.516 12.785-40.727 30.309zm58.723 11.84c0 10.418-8.5234 18.469-18.469 18.469s-18.469-8.0508-18.469-18.469 8.5234-18.469 18.469-18.469c9.4727-0.003906 18.469 8.0469 18.469 18.469z")
 					path(d="m259.5 359.43h-32.676c-6.6289 0-11.84 5.2109-11.84 11.84s5.2109 11.84 11.84 11.84h32.676c5.2109 17.523 21.312 30.309 40.727 30.309 18.941 0 35.52-12.785 40.254-30.309h185.17c6.6289 0 11.84-5.2109 11.84-11.84s-5.2109-11.84-11.84-11.84h-185.17c-5.2109-17.523-21.312-30.309-40.254-30.309-19.418 0-35.52 12.785-40.73 30.309zm58.723 11.84c0 10.418-8.5234 18.469-18.469 18.469-9.9453 0-18.469-8.0508-18.469-18.469s8.5234-18.469 18.469-18.469c9.9453 0 18.469 8.0508 18.469 18.469z")
 					path(d="m344.75 463.61h-117.92c-6.6289 0-11.84 5.2109-11.84 11.84s5.2109 11.84 11.84 11.84h117.92c5.2109 17.523 21.312 30.309 40.727 30.309 18.941 0 35.52-12.785 40.254-30.309h99.926c6.6289 0 11.84-5.2109 11.84-11.84s-5.2109-11.84-11.84-11.84h-99.926c-5.2109-17.523-21.312-30.309-40.254-30.309-19.418 0-35.52 12.785-40.727 30.309zm58.723 11.84c0 10.418-8.5234 18.469-18.469 18.469s-18.469-8.0508-18.469-18.469 8.5234-18.469 18.469-18.469 18.469 8.0508 18.469 18.469z")
 				template Filter
-				template(v-if="filteredTracks.length") ({{ filteredTracks.length }})
-			bunt-button.fav-toggle(v-if="favs.length", @click="onlyFavs = !onlyFavs; if (onlyFavs) resetFilteredTracks()", :class="onlyFavs ? ['active'] : []")
+				template(v-if="filteredTracks.length || filteredTags.length") ({{ filteredTracks.length + filteredTags.length}})
+			bunt-button.fav-toggle(v-if="favs.length", @click="onlyFavs = !onlyFavs; if (onlyFavs) resetFilteredTracksAndTags()", :class="onlyFavs ? ['active'] : []")
 				svg#star(viewBox="0 0 24 24")
 					polygon(
 						:style="{fill: '#FFA000', stroke: '#FFA000'}"
@@ -100,6 +103,7 @@ export default {
 			showFilterModal: false,
 			favs: [],
 			allTracks: [],
+			allTags: [],
 			onlyFavs: false,
 			scheduleError: false,
 			onHomeServer: false,
@@ -127,9 +131,16 @@ export default {
 		filteredTracks () {
 			return this.allTracks.filter(t => t.selected)
 		},
+		filteredTags () {
+			return this.allTags.filter(t => t.selected)
+		},
 		speakersLookup () {
 			if (!this.schedule) return {}
 			return this.schedule.speakers.reduce((acc, s) => { acc[s.code] = s; return acc }, {})
+		},
+		tagsLookup () {
+			if (!this.schedule) return {}
+			return this.schedule.tags.reduce((acc, s) => { acc[s.tag] = s; return acc }, {})
 		},
 		sessions () {
 			if (!this.schedule || !this.currentTimezone) return
@@ -137,6 +148,17 @@ export default {
 			for (const session of this.schedule.talks.filter(s => s.start)) {
 				if (this.onlyFavs && !this.favs.includes(session.code)) continue
 				if (this.filteredTracks && this.filteredTracks.length && !this.filteredTracks.find(t => t.id === session.track)) continue
+				let isTagFiltered = true
+				if (this.filteredTags && this.filteredTags.length) {
+					isTagFiltered = false
+					for (const sessionTag of session.tags) {
+						if (this.filteredTags.find(t => t.tag === sessionTag)) {
+							isTagFiltered = true
+							break
+						}
+					}
+				}
+				if (isTagFiltered === false) continue
 				sessions.push({
 					id: session.code,
 					title: session.title,
@@ -145,6 +167,7 @@ export default {
 					start: moment.tz(session.start, this.currentTimezone),
 					end: moment.tz(session.end, this.currentTimezone),
 					speakers: session.speakers?.map(s => this.speakersLookup[s]),
+					tags: session.tags?.map(s => this.speakersLookup[s]),
 					track: this.tracksLookup[session.track],
 					room: this.roomsLookup[session.room]
 				})
@@ -220,6 +243,7 @@ export default {
 			this.onWindowResize()
 		}
 		this.schedule.tracks.forEach(t => { t.value = t.id; t.label = getLocalizedString(t.name); this.allTracks.push(t) })
+		this.schedule.tags.forEach(t => { t.value = t.id; t.label = getLocalizedString(t.tag); this.allTags.push(t) })
 
 		// set API URL before loading favs
 		this.apiUrl = window.location.origin + '/api/events/' + this.eventSlug + '/'
@@ -364,7 +388,14 @@ export default {
 		},
 		resetFilteredTracks () {
 			this.allTracks.forEach(t => t.selected = false)
-		}
+		},
+		resetFilteredTags () {
+			this.allTags.forEach(t => t.selected = false)
+		},
+		resetFilteredTracksAndTags () {
+			this.resetFilteredTracks()
+			this.resetFilteredTags()
+		},
 	}
 }
 </script>

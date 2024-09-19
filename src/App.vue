@@ -147,18 +147,14 @@ export default {
 			const sessions = []
 			for (const session of this.schedule.talks.filter(s => s.start)) {
 				if (this.onlyFavs && !this.favs.includes(session.code)) continue
-				if (this.filteredTracks && this.filteredTracks.length && !this.filteredTracks.find(t => t.id === session.track)) continue
-				let isTagFiltered = true
-				if (this.filteredTags && this.filteredTags.length) {
-					isTagFiltered = false
-					for (const sessionTag of session.tags) {
-						if (this.filteredTags.find(t => t.tag === sessionTag)) {
-							isTagFiltered = true
-							break
-						}
-					}
+				const isTrackFilterOn = (this.filteredTracks && this.filteredTracks.length)
+				const isTagsFilterOn = (this.filteredTags && this.filteredTags.length)
+				if (isTrackFilterOn || isTagsFilterOn) {
+					if (
+						(!isTrackFilterOn || !this.filteredTracks.find(t => t.id === session.track)) &&
+						(!isTagsFilterOn || !session.tags.some(sessionTag => this.filteredTags.find(t => t.tag === sessionTag)))
+					) continue
 				}
-				if (isTagFiltered === false) continue
 				sessions.push({
 					id: session.code,
 					title: session.title,

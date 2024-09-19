@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-export NODE_OPTIONS=--openssl-legacy-provider
+#export NODE_OPTIONS=--openssl-legacy-provider
 npm run build:wc
 
 # Strip sourcemaps, as pretalx build tools are unhappy

@@ -61,7 +61,9 @@ export default {
 			return Object.entries(buckets).map(([date, sessions]) => ({
 				date: sessions[0].start,
 				// sort by room for stable sort across time buckets
-				sessions: sessions.sort((a, b) => this.rooms.findIndex(room => room.id === a.room.id) - this.rooms.findIndex(room => room.id === b.room.id))
+				// NOVA Update: this was sorted by room-id, now its sorted alphabetically by title
+				sessions: sessions.sort((a, b) => a.title.localeCompare(b.title))
+				// old: sessions: sessions.sort((a, b) => this.rooms.findIndex(room => room.id === a.room.id) - this.rooms.findIndex(room => room.id === b.room.id))
 			}))
 		}
 	},

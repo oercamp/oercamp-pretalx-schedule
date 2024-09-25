@@ -9,7 +9,9 @@ a.c-linear-schedule-session(:class="{faved}", :style="style", :href="link", @cli
 		.is-live(v-if="isLive") live
 	.info
 		.title {{ getLocalizedString(session.title) }}
-		.speakers(v-if="session.speakers")
+		.custom_speaker_title(v-if="session.custom_speaker_title")
+			.name {{ session.custom_speaker_title }}
+		.speakers(v-else-if="session.speakers")
 			.avatars
 				template(v-for="speaker of session.speakers")
 					img(v-if="speaker.avatar", :src="speaker.avatar")
@@ -188,6 +190,9 @@ export default {
 			font-size: 16px
 			font-weight: 500
 			margin-bottom: 4px
+		.custom_speaker_title
+			color: $clr-secondary-text-light
+			line-height: 24px
 		.speakers
 			color: $clr-secondary-text-light
 			display: flex

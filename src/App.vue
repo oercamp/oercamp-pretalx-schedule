@@ -165,6 +165,7 @@ export default {
 					speakers: session.speakers?.map(s => this.speakersLookup[s]),
 					tags: session.tags?.map(s => this.speakersLookup[s]),
 					track: this.tracksLookup[session.track],
+					custom_speaker_title: session.custom_speaker_title,
 					room: this.roomsLookup[session.room]
 				})
 			}

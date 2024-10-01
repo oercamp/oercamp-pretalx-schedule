@@ -28,6 +28,20 @@
 						points="14.43,10 12,2 9.57,10 2,10 8.18,14.41 5.83,22 12,17.31 18.18,22 15.83,14.41 22,10"
 					)
 				template {{ favs.length }}
+			.zoom-buttons
+				p Zoom:
+				bunt-icon-button.btn-fav-container(@click.prevent.stop="zoomDecrease")
+					svg.star(viewBox="0 0 24 24", ref="minus")
+						path(d="M19,13H5V11H19V13Z"
+					)
+				bunt-icon-button.btn-fav-container(@click.prevent.stop="zoomIncrease")
+					svg.star(viewBox="0 0 24 24", ref="plus")
+						path(d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+					)
+				bunt-icon-button.btn-fav-container(@click.prevent.stop="zoomReset")
+					svg.star(viewBox="0 0 24 24", ref="refresh")
+						path(d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"
+					)
 			template(v-if="!inEventTimezone")
 				bunt-select.timezone-item(name="timezone", :options="[{id: schedule.timezone, label: schedule.timezone}, {id: userTimezone, label: userTimezone}]", v-model="currentTimezone", @blur="saveTimezone")
 			template(v-else)
@@ -393,6 +407,48 @@ export default {
 			this.resetFilteredTracks()
 			this.resetFilteredTags()
 		},
+		zoomIncrease () {
+			this.zoomChange(0.25)
+		},
+		zoomDecrease () {
+			this.zoomChange(-0.25)
+		},
+		zoomReset () {
+			this.zoomChange('reset')
+		},
+		/**
+		 * @param changeValue - can be a number or 'reset'
+		 */
+		zoomChange (changeValue) {
+			['c-grid-schedule', 'c-linear-schedule'].forEach((className) => {
+				const shadowRootEl = document.querySelector('pretalx-schedule')
+				if (shadowRootEl === null) {
+					return
+				}
+				const scheduleElArr = shadowRootEl.shadowRoot.querySelectorAll(`.${className}`)
+				if (scheduleElArr.length > 0) {
+					const scheduleEl = scheduleElArr[0]
+					if (changeValue === 'reset') {
+						this.zoomSet(scheduleEl, 1)
+						return
+					}
+					const scheduleZoomValue = parseFloat(
+						window.getComputedStyle(scheduleEl).getPropertyValue('zoom')
+					)
+					if (!isNaN(scheduleZoomValue)) {
+						const newValue = scheduleZoomValue + changeValue
+						if (newValue > 2 || newValue < 0) {
+							this.zoomSet(scheduleEl, 1)
+						} else {
+							this.zoomSet(scheduleEl, newValue)
+						}
+					}
+				}
+			})
+		},
+		zoomSet (element, value) {
+			element.style.zoom = value
+		}
 	}
 }
 </script>
@@ -482,6 +538,10 @@ export default {
 			color: $clr-secondary-text-light
 		.timezone-item
 			margin-left: auto
+		.zoom-buttons
+			display: flex
+			align-items: center
+			margin: 0 1rem
 	.days
 		background-color: $clr-white
 		tabs-style(active-color: var(--pretalx-clr-primary), indicator-color: var(--pretalx-clr-primary), background-color: transparent)

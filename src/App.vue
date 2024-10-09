@@ -180,6 +180,7 @@ export default {
 					tags: session.tags?.map(s => this.speakersLookup[s]),
 					track: this.tracksLookup[session.track],
 					custom_speaker_title: session.custom_speaker_title,
+					emoji_label: session.emoji_label,
 					room: this.roomsLookup[session.room]
 				})
 			}

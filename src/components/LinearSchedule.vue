@@ -31,6 +31,7 @@ export default {
 				return []
 			}
 		},
+		currentZoomValue: Number,
 		currentDay: Object,
 		now: Object,
 		scrollParent: Element,
@@ -127,7 +128,7 @@ export default {
 			if (!dayBucket) return
 			const el = this.$refs[this.getBucketName(dayBucket.date)]?.[0]
 			if (!el) return
-			const scrollTop = el.offsetTop + this.getOffsetTop() - 8
+			const scrollTop = (el.offsetTop * this.currentZoomValue) + this.getOffsetTop() - 8
 			if (this.scrollParent) {
 				this.scrollParent.scrollTop = scrollTop
 			} else {

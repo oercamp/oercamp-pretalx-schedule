@@ -66,6 +66,7 @@
 			:now="now",
 			:scrollParent="scrollParent",
 			:favs="favs",
+			:currentZoomValue="currentZoomValue",
 			@changeDay="currentDay = $event",
 			@fav="fav($event)",
 			@unfav="unfav($event)")

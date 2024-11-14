@@ -1,5 +1,5 @@
 <template lang="pug">
-.pretalx-schedule(:style="{'--scrollparent-width': scrollParentWidth + 'px', '--schedule-max-width': scheduleMaxWidth + 'px', '--pretalx-sticky-date-offset': days && days.length > 1 ? '48px' : '0px'}", :class="showGrid ? ['grid-schedule'] : ['list-schedule']")
+.pretalx-schedule(:style="{'--scrollparent-width': scrollParentWidth + 'px', '--schedule-max-width': scheduleMaxWidth + 'px', '--pretalx-sticky-date-offset': days && days.length > 1 ? (48 / currentZoomValue) + 'px' : '0px'}", :class="showGrid ? ['grid-schedule'] : ['list-schedule']")
 	template(v-if="scheduleError")
 		.schedule-error
 			.error-message An error occurred while loading the schedule. Please try again later.
@@ -55,6 +55,7 @@
 			:now="now",
 			:scrollParent="scrollParent",
 			:favs="favs",
+			:currentZoomValue="currentZoomValue",
 			@changeDay="currentDay = $event",
 			@fav="fav($event)",
 			@unfav="unfav($event)")
@@ -125,6 +126,7 @@ export default {
 			apiUrl: null,
 			translationMessages: {},
 			errorMessages: [],
+			currentZoomValue: 1
 		}
 	},
 	computed: {
@@ -448,6 +450,7 @@ export default {
 			})
 		},
 		zoomSet (element, value) {
+			this.currentZoomValue = value
 			element.style.zoom = value
 		}
 	}

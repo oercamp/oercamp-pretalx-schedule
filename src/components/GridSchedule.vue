@@ -57,6 +57,7 @@ export default {
 				return []
 			}
 		},
+		currentZoomValue: Number,
 		currentDay: Object,
 		now: Object,
 		scrollParent: Element
@@ -308,7 +309,7 @@ export default {
 			if (this.scrolledDay === day) return
 			const el = this.$refs[getSliceName(day)]?.[0]
 			if (!el) return
-			const offset = el.offsetTop + this.getOffsetTop()
+			const offset = (el.offsetTop * this.currentZoomValue) + this.getOffsetTop()
 			if (this.scrollParent) {
 				this.scrollParent.scrollTop = offset
 			} else {

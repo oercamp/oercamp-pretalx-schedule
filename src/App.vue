@@ -507,6 +507,8 @@ export default {
 		margin-left: 18px
 		align-self: flex-start
 		display: flex
+		@media (max-width: 576px)
+			flex-direction: column
 		align-items: center
 		position: sticky
 		z-index: 100

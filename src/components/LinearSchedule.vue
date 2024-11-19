@@ -63,7 +63,7 @@ export default {
 				date: sessions[0].start,
 				// sort by room for stable sort across time buckets
 				// NOVA Update: this was sorted by room-id, now its sorted alphabetically by title
-				sessions: sessions.sort((a, b) => a.title.localeCompare(b.title))
+				sessions: sessions.sort((a, b) => String(a.title).localeCompare(b.title))
 				// old: sessions: sessions.sort((a, b) => this.rooms.findIndex(room => room.id === a.room.id) - this.rooms.findIndex(room => room.id === b.room.id))
 			}))
 		}

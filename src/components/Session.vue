@@ -8,7 +8,7 @@ a.c-linear-schedule-session(:class="{faved}", :style="style", :href="link", @cli
 		.buffer
 		.is-live(v-if="isLive") live
 	.info
-		.title {{ getLocalizedString(session.emoji_label) }} {{getLocalizedString(session.title) }}
+		.title {{ session.tags.map(s => s.emoji_label).join(' ') }} {{ getLocalizedString(session.emoji_label) }} {{getLocalizedString(session.title) }}
 		.custom_speaker_title(v-if="session.custom_speaker_title")
 			.name {{ session.custom_speaker_title }}
 		.speakers(v-else-if="session.speakers")

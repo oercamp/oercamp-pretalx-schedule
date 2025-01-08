@@ -180,7 +180,7 @@ export default {
 					start: moment.tz(session.start, this.currentTimezone),
 					end: moment.tz(session.end, this.currentTimezone),
 					speakers: session.speakers?.map(s => this.speakersLookup[s]),
-					tags: session.tags?.map(s => this.speakersLookup[s]),
+					tags: session.tags?.map(s => this.tagsLookup[s]),
 					track: this.tracksLookup[session.track],
 					custom_speaker_title: session.custom_speaker_title,
 					emoji_label: session.emoji_label,

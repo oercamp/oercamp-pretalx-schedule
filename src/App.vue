@@ -2,7 +2,7 @@
 .pretalx-schedule(:style="{'--scrollparent-width': scrollParentWidth + 'px', '--schedule-max-width': scheduleMaxWidth + 'px', '--pretalx-sticky-date-offset': days && days.length > 1 ? (48 / currentZoomValue) + 'px' : '0px'}", :class="showGrid ? ['grid-schedule'] : ['list-schedule']")
 	template(v-if="scheduleError")
 		.schedule-error
-			.error-message An error occurred while loading the schedule. Please try again later.
+			.error-message Das Programm wird zur Zeit vorbereitet und ist noch nicht bereit. Bitte besuche uns erneut zu einem späteren Zeitpunkt.
 	template(v-else-if="schedule && (sessions.length || (filteredTracks && filteredTracks.length && filteredTags && filteredTags.length))")
 		.modal-overlay(v-if="showFilterModal", @click.stop="showFilterModal = false")
 			.modal-box(@click.stop="")
@@ -464,6 +464,11 @@ export default {
 	font-size: 18px
 	text-align: center
 	padding: 32px
+	position: absolute
+	left:0
+	display: flex
+	justify-content: center
+	width: 100%
 	.error-message
 		margin-top: 16px
 .pretalx-schedule

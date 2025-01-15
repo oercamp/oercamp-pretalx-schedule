@@ -463,7 +463,6 @@ export default {
 	color: $clr-error
 	font-size: 18px
 	text-align: center
-	padding: 32px
 	position: absolute
 	left:0
 	display: flex

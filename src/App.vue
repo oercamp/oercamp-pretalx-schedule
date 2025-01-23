@@ -258,7 +258,14 @@ export default {
 			this.onWindowResize()
 		}
 		this.schedule.tracks.forEach(t => { t.value = t.id; t.label = getLocalizedString(t.name); this.allTracks.push(t) })
-		this.schedule.tags.forEach(t => { t.value = t.id; t.label = getLocalizedString(t.tag); this.allTags.push(t) })
+		this.schedule.tags.forEach(t => {
+			if (!t.public) {
+				return
+			}
+			t.value = t.id
+			t.label = getLocalizedString(t.tag)
+			this.allTags.push(t)
+		})
 
 		// set API URL before loading favs
 		this.apiUrl = window.location.origin + '/api/events/' + this.eventSlug + '/'

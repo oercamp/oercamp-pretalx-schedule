@@ -43,7 +43,7 @@
 						path(d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"
 					)
 			template(v-if="!inEventTimezone")
-				bunt-select.timezone-item(name="timezone", :options="[{id: schedule.timezone, label: schedule.timezone}, {id: userTimezone, label: userTimezone}]", v-model="currentTimezone", @blur="saveTimezone")
+				bunt-select.timezone-item(name="timezone", :options="timezoneOptions", v-model="currentTimezone", @blur="saveTimezone")
 			template(v-else)
 				div.timezone-label.timezone-item.bunt-tab-header-item {{ schedule.timezone }}
 		bunt-tabs.days(v-if="days && days.length > 1", :active-tab="currentDay && currentDay.format()", ref="tabs" :class="showGrid? ['grid-tabs'] : ['list-tabs']")
@@ -113,6 +113,7 @@ export default {
 			scrollParentWidth: Infinity,
 			schedule: null,
 			userTimezone: null,
+			timezoneOptions: [],
 			now: moment(),
 			currentDay: null,
 			currentTimezone: null,
@@ -203,9 +204,13 @@ export default {
 			return days
 		},
 		inEventTimezone () {
-			if (!this.schedule?.talks?.length) return false
-			const example = this.schedule.talks[0].start
-			return moment.tz(example, this.userTimezone).format('Z') === moment.tz(example, this.schedule.timezone).format('Z')
+			/**
+			 * OERC-72: We will allow time selection all the time for now.
+			 */
+			return false
+			// if (!this.schedule?.talks?.length) return false
+			// const example = this.schedule.talks[0].start
+			// return moment.tz(example, this.userTimezone).format('Z') === moment.tz(example, this.schedule.timezone).format('Z')
 		},
 		dateFormat () {
 			// Defaults to dddd DD. MMMM for: all grid schedules with more than two rooms, and all list schedules with less than five days
@@ -248,8 +253,14 @@ export default {
 			this.scheduleError = true
 			return
 		}
+		const allTimeZonesList = moment.tz.names()
+		const allTimezones = allTimeZonesList.map(tz => ({ id: tz, label: tz }))
 		this.currentTimezone = localStorage.getItem(`${this.eventSlug}_timezone`)
-		this.currentTimezone = [this.schedule.timezone, this.userTimezone].includes(this.currentTimezone) ? this.currentTimezone : this.schedule.timezone
+		this.currentTimezone = [this.schedule.timezone, ...allTimeZonesList, this.userTimezone].includes(this.currentTimezone) ? this.currentTimezone : this.schedule.timezone
+		const topTimezones = [this.schedule.timezone, this.userTimezone, this.currentTimezone]
+			.filter((tz, index, arr) => tz && arr.indexOf(tz) === index)
+			.map(tz => ({ id: tz, label: tz }))
+		this.timezoneOptions = [...topTimezones, ...allTimezones.filter(tz => !topTimezones.find(t => t.id === tz.id))]
 		this.currentDay = this.days[0]
 		this.now = moment().tz(this.currentTimezone)
 		setInterval(() => this.now = moment().tz(this.currentTimezone), 30000)

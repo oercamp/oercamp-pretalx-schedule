@@ -21,7 +21,7 @@ It works with v16.20.2, you can choose it with ``nvm use lts/gallium``.
 
 
 * Deployment to pretalx:  
-Make sure the `schedule` and `pretalx` repositories share a root directory, then simply run ``./update-and-rebuild-pretalx.sh``.  
+Make sure the `schedule` and `pretalx` repositories share a root directory, then simply run ``./update.sh``.  
 Now head over to your pretalx project.  
 The file ``src/pretalx/static/agenda/js/prtalx-schedule.js`` should be updated.
 Review it and build your project, usually with ``./bin/build``

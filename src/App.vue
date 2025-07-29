@@ -679,8 +679,6 @@ export default {
 		.timezone-label
 			cursor: default
 			color: $clr-secondary-text-light
-		.timezone-item
-			margin-left: auto
 		.zoom-buttons
 			display: flex
 			align-items: center

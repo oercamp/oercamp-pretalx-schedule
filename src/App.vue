@@ -647,7 +647,7 @@ export default {
 			flex-direction: column
 		align-items: center
 		position: sticky
-		z-index: 100
+		z-index: 9999
 		left: 18px
 		width: calc(100% - 36px)
 		.fav-toggle

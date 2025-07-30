@@ -616,7 +616,7 @@ export default {
 		min-width: 0
 	.modal-overlay
 		position: fixed
-		z-index: 1000
+		z-index: 10000
 		top: 0
 		left: 0
 		width: 100%
@@ -648,7 +648,9 @@ export default {
 		align-items: center
 		position: sticky
 		z-index: 9999
-		left: 18px
+		left: 0
+		padding-left: 18px
+		max-width: var(--schedule-max-width)
 		width: calc(100% - 36px)
 		.fav-toggle
 			margin-right: 8px
@@ -711,7 +713,7 @@ export default {
 	bottom: 0
 	right: 0
 	padding: 12px
-	z-index: 1000
+	z-index: 10000
 	.error-message
 		padding: 8px
 		color: $clr-danger

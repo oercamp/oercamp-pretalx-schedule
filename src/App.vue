@@ -86,93 +86,66 @@ import { findScrollParent, getLocalizedString } from 'utils'
 
 Vue.use(Buntpapier)
 
-const friendlyToIANA = {
-	'(GMT-12:00) International Date Line West': 'Etc/GMT+12',
-	'(GMT-11:00) Midway Island, Samoa': 'Pacific/Midway',
-	'(GMT-10:00) Hawaii': 'Pacific/Honolulu',
-	'(GMT-09:00) Alaska': 'America/Anchorage',
-	'(GMT-08:00) Pacific Time (US & Canada)': 'America/Los_Angeles',
-	'(GMT-08:00) Tijuana, Baja California': 'America/Tijuana',
-	'(GMT-07:00) Arizona': 'America/Phoenix',
-	'(GMT-07:00) Chihuahua, La Paz, Mazatlan': 'America/Chihuahua',
-	'(GMT-07:00) Mountain Time (US & Canada)': 'America/Denver',
-	'(GMT-06:00) Central America': 'America/Guatemala',
-	'(GMT-06:00) Central Time (US & Canada)': 'America/Chicago',
-	'(GMT-06:00) Guadalajara, Mexico City, Monterrey': 'America/Mexico_City',
-	'(GMT-06:00) Saskatchewan': 'America/Regina',
-	'(GMT-05:00) Bogota, Lima, Quito, Rio Branco': 'America/Lima',
-	'(GMT-05:00) Eastern Time (US & Canada)': 'America/New_York',
-	'(GMT-05:00) Indiana (East)': 'America/Indiana/Indianapolis',
-	'(GMT-04:00) Atlantic Time (Canada)': 'America/Halifax',
-	'(GMT-04:00) Caracas, La Paz': 'America/Caracas',
-	'(GMT-04:00) Manaus': 'America/Manaus',
-	'(GMT-04:00) Santiago': 'America/Santiago',
-	'(GMT-03:30) Newfoundland': 'America/St_Johns',
-	'(GMT-03:00) Brasilia': 'America/Sao_Paulo',
-	'(GMT-03:00) Buenos Aires, Georgetown': 'America/Argentina/Buenos_Aires',
-	'(GMT-03:00) Greenland': 'America/Nuuk',
-	'(GMT-03:00) Montevideo': 'America/Montevideo',
-	'(GMT-02:00) Mid-Atlantic': 'Etc/GMT+2',
-	'(GMT-01:00) Cape Verde Is.': 'Atlantic/Cape_Verde',
-	'(GMT-01:00) Azores': 'Atlantic/Azores',
-	'(GMT+00:00) Casablanca, Monrovia, Reykjavik': 'Africa/Casablanca',
-	'(GMT+00:00) Greenwich Mean Time : Dublin, Edinburgh, Lisbon, London': 'Europe/London',
-	'(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna': 'Europe/Berlin',
-	'(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague': 'Europe/Belgrade',
-	'(GMT+01:00) Brussels, Copenhagen, Madrid, Paris': 'Europe/Paris',
-	'(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb': 'Europe/Sarajevo',
-	'(GMT+01:00) West Central Africa': 'Africa/Lagos',
-	'(GMT+02:00) Amman': 'Asia/Amman',
-	'(GMT+02:00) Athens, Bucharest, Istanbul': 'Europe/Athens',
-	'(GMT+02:00) Beirut': 'Asia/Beirut',
-	'(GMT+02:00) Cairo': 'Africa/Cairo',
-	'(GMT+02:00) Harare, Pretoria': 'Africa/Harare',
-	'(GMT+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius': 'Europe/Helsinki',
-	'(GMT+02:00) Jerusalem': 'Asia/Jerusalem',
-	'(GMT+02:00) Minsk': 'Europe/Minsk',
-	'(GMT+02:00) Windhoek': 'Africa/Windhoek',
-	'(GMT+03:00) Kuwait, Riyadh, Baghdad': 'Asia/Riyadh',
-	'(GMT+03:00) Moscow, St. Petersburg, Volgograd': 'Europe/Moscow',
-	'(GMT+03:00) Nairobi': 'Africa/Nairobi',
-	'(GMT+03:00) Tbilisi': 'Asia/Tbilisi',
-	'(GMT+03:30) Tehran': 'Asia/Tehran',
-	'(GMT+04:00) Abu Dhabi, Muscat': 'Asia/Muscat',
-	'(GMT+04:00) Baku': 'Asia/Baku',
-	'(GMT+04:00) Yerevan': 'Asia/Yerevan',
-	'(GMT+04:30) Kabul': 'Asia/Kabul',
-	'(GMT+05:00) Yekaterinburg': 'Asia/Yekaterinburg',
-	'(GMT+05:00) Islamabad, Karachi, Tashkent': 'Asia/Karachi',
-	'(GMT+05:30) Sri Jayawardenapura': 'Asia/Colombo',
-	'(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi': 'Asia/Kolkata',
-	'(GMT+05:45) Kathmandu': 'Asia/Kathmandu',
-	'(GMT+06:00) Almaty, Novosibirsk': 'Asia/Almaty',
-	'(GMT+06:00) Astana, Dhaka': 'Asia/Dhaka',
-	'(GMT+06:30) Yangon (Rangoon)': 'Asia/Yangon',
-	'(GMT+07:00) Bangkok, Hanoi, Jakarta': 'Asia/Bangkok',
-	'(GMT+07:00) Krasnoyarsk': 'Asia/Krasnoyarsk',
-	'(GMT+08:00) Beijing, Chongqing, Hong Kong, Urumqi': 'Asia/Shanghai',
-	'(GMT+08:00) Kuala Lumpur, Singapore': 'Asia/Singapore',
-	'(GMT+08:00) Irkutsk, Ulaan Bataar': 'Asia/Irkutsk',
-	'(GMT+08:00) Perth': 'Australia/Perth',
-	'(GMT+08:00) Taipei': 'Asia/Taipei',
-	'(GMT+09:00) Osaka, Sapporo, Tokyo': 'Asia/Tokyo',
-	'(GMT+09:00) Seoul': 'Asia/Seoul',
-	'(GMT+09:00) Yakutsk': 'Asia/Yakutsk',
-	'(GMT+09:30) Adelaide': 'Australia/Adelaide',
-	'(GMT+09:30) Darwin': 'Australia/Darwin',
-	'(GMT+10:00) Brisbane': 'Australia/Brisbane',
-	'(GMT+10:00) Canberra, Melbourne, Sydney': 'Australia/Sydney',
-	'(GMT+10:00) Hobart': 'Australia/Hobart',
-	'(GMT+10:00) Guam, Port Moresby': 'Pacific/Port_Moresby',
-	'(GMT+10:00) Vladivostok': 'Asia/Vladivostok',
-	'(GMT+11:00) Magadan, Solomon Is., New Caledonia': 'Asia/Magadan',
-	'(GMT+12:00) Auckland, Wellington': 'Pacific/Auckland',
-	'(GMT+12:00) Fiji, Kamchatka, Marshall Is.': 'Pacific/Fiji',
-	'(GMT+13:00) Nuku\'alofa': 'Pacific/Tongatapu'
+// Offsets are not stored here. They are rendered from IANA data at the
+// event date, so summer and winter time move each entry to the right UTC offset.
+const timezoneChoices = [
+	{ name: 'Baker Island, Howland Island (uninhabited)', iana: 'Etc/GMT+12' },
+	{ name: 'American Samoa, Niue', iana: 'Pacific/Pago_Pago' },
+	{ name: 'Hawaii, Cook Islands, Tahiti', iana: 'Pacific/Honolulu' },
+	{ name: 'Marquesas Islands', iana: 'Pacific/Marquesas' },
+	{ name: 'Alaska, Gambier Islands', iana: 'America/Anchorage' },
+	{ name: 'Pacific Time (US/Canada west coast), Baja California', iana: 'America/Los_Angeles' },
+	{ name: 'Mountain Time (US/Canada), Arizona', iana: 'America/Denver' },
+	{ name: 'Central Time (US/Canada), Mexico City, Central America', iana: 'America/Chicago' },
+	{ name: 'Eastern Time (US/Canada), Colombia, Peru', iana: 'America/New_York' },
+	{ name: 'Atlantic Time (Canada), Venezuela, Bolivia, Chile', iana: 'America/Halifax' },
+	{ name: 'Newfoundland', iana: 'America/St_Johns' },
+	{ name: 'Argentina, Uruguay, eastern Brazil (São Paulo), Greenland', iana: 'America/Argentina/Buenos_Aires' },
+	{ name: 'Fernando de Noronha, South Georgia', iana: 'America/Noronha' },
+	{ name: 'Azores, Cape Verde', iana: 'Atlantic/Azores' },
+	{ name: 'UTC/GMT: United Kingdom, Ireland, Portugal, Iceland, West Africa (Ghana)', iana: 'Europe/London' },
+	{ name: 'Central European Time (Germany, France, Spain, Italy), Nigeria', iana: 'Europe/Berlin' },
+	{ name: 'Eastern European Time (Greece, Finland, Ukraine), Egypt, South Africa', iana: 'Europe/Helsinki' },
+	{ name: 'Moscow, Turkey, East Africa (Kenya), Saudi Arabia', iana: 'Europe/Moscow' },
+	{ name: 'Iran', iana: 'Asia/Tehran' },
+	{ name: 'United Arab Emirates, Azerbaijan, Georgia, Mauritius', iana: 'Asia/Dubai' },
+	{ name: 'Afghanistan', iana: 'Asia/Kabul' },
+	{ name: 'Pakistan, Uzbekistan, Maldives', iana: 'Asia/Karachi' },
+	{ name: 'India, Sri Lanka', iana: 'Asia/Kolkata' },
+	{ name: 'Nepal', iana: 'Asia/Kathmandu' },
+	{ name: 'Bangladesh, Bhutan, eastern Kazakhstan', iana: 'Asia/Dhaka' },
+	{ name: 'Myanmar, Cocos Islands', iana: 'Asia/Yangon' },
+	{ name: 'Thailand, Vietnam, western Indonesia (Jakarta)', iana: 'Asia/Bangkok' },
+	{ name: 'China, Singapore, Malaysia, Philippines, Western Australia (Perth)', iana: 'Asia/Shanghai' },
+	{ name: 'Eucla (Western Australia, unofficial)', iana: 'Australia/Eucla' },
+	{ name: 'Japan, South Korea, eastern Indonesia', iana: 'Asia/Tokyo' },
+	{ name: 'Central Australia (Adelaide, Darwin)', iana: 'Australia/Adelaide' },
+	{ name: 'Eastern Australia (Sydney), Guam, Papua New Guinea', iana: 'Australia/Sydney' },
+	{ name: 'Lord Howe Island', iana: 'Australia/Lord_Howe' },
+	{ name: 'Solomon Islands, New Caledonia, Vanuatu', iana: 'Pacific/Guadalcanal' },
+	{ name: 'New Zealand, Fiji, Kamchatka', iana: 'Pacific/Auckland' },
+	{ name: 'Chatham Islands', iana: 'Pacific/Chatham' },
+	{ name: 'Tonga, Samoa, Tokelau', iana: 'Pacific/Tongatapu' },
+	{ name: 'Kiribati (Line Islands)', iana: 'Pacific/Kiritimati' }
+]
+const ianaToName = Object.fromEntries(timezoneChoices.map(choice => [choice.iana, choice.name]))
+
+function timezoneLabel (iana, at) {
+	const offset = moment.tz(at, iana).format('Z')
+	const name = ianaToName[iana] || iana
+	return `UTC${offset}  ${name}`
 }
-const ianaToFriendly = Object.fromEntries(
-	Object.entries(friendlyToIANA).map(([label, iana]) => [iana, label])
-)
+
+function timezoneOptionsAt (at) {
+	return timezoneChoices
+		.map(choice => ({
+			id: choice.iana,
+			label: timezoneLabel(choice.iana, at),
+			offset: moment.tz(at, choice.iana).utcOffset()
+		}))
+		.sort((a, b) => a.offset - b.offset || a.label.localeCompare(b.label))
+		.map(({ id, label }) => ({ id, label }))
+}
 
 export default {
 	name: 'PretalxSchedule',
@@ -258,7 +231,7 @@ export default {
 				if (isTrackFilterOn || isTagsFilterOn) {
 					if (
 						(!isTrackFilterOn || !this.filteredTracks.find(t => t.id === session.track)) &&
-						(!isTagsFilterOn || !session.tags.some(sessionTag => this.filteredTags.find(t => t.tag === sessionTag)))
+						(!isTagsFilterOn || !(session.tags || []).some(sessionTag => this.filteredTags.find(t => t.tag === sessionTag)))
 					) continue
 				}
 				sessions.push({
@@ -342,16 +315,18 @@ export default {
 			return
 		}
 
-		const allTimezones = Object.entries(friendlyToIANA).map(([label, id]) => ({ id, label }))
+		const reference = this.schedule.event_start || this.schedule.talks.find(talk => talk.start)?.start
+		const allTimezones = timezoneOptionsAt(reference)
 		this.currentTimezone = localStorage.getItem(`${this.eventSlug}_timezone`)
 
-		const validIanaTimezones = new Set(Object.values(friendlyToIANA))
+		const validIanaTimezones = new Set(timezoneChoices.map(choice => choice.iana))
+		validIanaTimezones.add(this.schedule.timezone)
 		this.currentTimezone = validIanaTimezones.has(this.currentTimezone)
 			? this.currentTimezone
 			: this.schedule.timezone
 		const topTimezones = [this.schedule.timezone, this.userTimezone, this.currentTimezone]
 			.filter((tz, index, arr) => tz && arr.indexOf(tz) === index)
-			.map(tz => ({ id: tz, label: ianaToFriendly[tz] || tz }))
+			.map(tz => ({ id: tz, label: timezoneLabel(tz, reference) }))
 
 		const topTzIds = new Set(topTimezones.map(t => t.id))
 
